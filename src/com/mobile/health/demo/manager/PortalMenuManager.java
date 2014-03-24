@@ -14,6 +14,7 @@ import javax.swing.KeyStroke;
 
 import com.mobile.health.demo.listener.ExcelSheetExportActionListener;
 import com.mobile.health.demo.listener.ExitButtonActionListener;
+import com.mobile.health.demo.listener.FlatFileExportActionListener;
 
 public class PortalMenuManager {
 
@@ -34,8 +35,8 @@ public class PortalMenuManager {
         submenu = new JMenu("Save As");
         submenu.setMnemonic(KeyEvent.VK_T);
 
-        menuItem = new JMenuItem("PDF");
-        menuItem.addActionListener(new ExcelSheetExportActionListener(frame));
+        menuItem = new JMenuItem("CSV");
+        menuItem.addActionListener(new FlatFileExportActionListener(frame));
         submenu.add(menuItem);
 
         menuItem = new JMenuItem("Excel");
