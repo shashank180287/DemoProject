@@ -37,6 +37,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -46,10 +48,12 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.mobile.health.demo.entity.PersonDetails;
 import com.mobile.health.demo.entity.PersonDetailsTableModel;
 import com.mobile.health.demo.listener.AddingNewPersonListener;
 import com.mobile.health.demo.listener.EditingExistingPersonListener;
 import com.mobile.health.demo.manager.DBManger;
+import com.mobile.health.demo.manager.PortalMenuManager;
 
 /**
  * This is exactly like PublicHealthPortalDemoLauncher, except that it uses a custom cell editor to
@@ -69,13 +73,19 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 	private JButton editExistingButton;
 	private JButton removeExistingButton;
 	
+	private static final int PAGE_SIZE=2;
+	private static int PAGE_NUMBER=1;
+	private List<PersonDetails> personDetailsList;
+	
 	public PublicHealthPortalDemoLauncher() {
 		super(new GridLayout(1, 0));
 		final JFrame frame = new JFrame("Public Health Portal Demo");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		
-		PersonDetailsTableModel personDetailsTableModel = DBManger.fetchPersonDetailsTableModel();
+		personDetailsList = DBManger.getPersonDetails();
+		
+		PersonDetailsTableModel personDetailsTableModel = paginatePersonDetailsTableModel();
 		final PublicHealthPortalTable table = new PublicHealthPortalTable(personDetailsTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
@@ -88,10 +98,57 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 
         topBtnPnl.add((personDetailsTableModel.getRowCount()==0?new JLabel("No Data Found..."):new JLabel()));
         previousButton = new JButton("Previous");
-        previousButton.setEnabled(false);
+        if(PAGE_NUMBER==1){
+        	previousButton.setEnabled(false);
+        }else{
+        	previousButton.setEnabled(true);
+        }
+        previousButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				PAGE_NUMBER--;
+				table.setModel(paginatePersonDetailsTableModel());
+		        if(PAGE_NUMBER==1){
+		        	previousButton.setEnabled(false);
+		        }else{
+		        	previousButton.setEnabled(true);
+		        }
+		        if(personDetailsList.size()<=PAGE_NUMBER*PAGE_SIZE){
+		        	nextButton.setEnabled(false);
+		        }else{
+		        	nextButton.setEnabled(true);
+		        }
+				frame.repaint();
+			}
+		});
         topBtnPnl.add(previousButton);
+        
         nextButton = new JButton("Next");
-        nextButton.setEnabled(false);
+        if(personDetailsList.size()<=PAGE_NUMBER*PAGE_SIZE){
+        	nextButton.setEnabled(false);
+        }else{
+        	nextButton.setEnabled(true);
+        }
+        nextButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				PAGE_NUMBER++;
+				table.setModel(paginatePersonDetailsTableModel());
+		        if(PAGE_NUMBER==1){
+		        	previousButton.setEnabled(false);
+		        }else{
+		        	previousButton.setEnabled(true);
+		        }
+		        if(personDetailsList.size()<=PAGE_NUMBER*PAGE_SIZE){
+		        	nextButton.setEnabled(false);
+		        }else{
+		        	nextButton.setEnabled(true);
+		        }
+		        frame.repaint();
+			}
+		});
         topBtnPnl.add(nextButton);
 
         addNewButton = (new JButton("Add New"));
@@ -129,6 +186,16 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         frame.setVisible(true);
 	}
 	
+	private PersonDetailsTableModel paginatePersonDetailsTableModel() {
+		List<PersonDetails> paginatedPersonDetails = new ArrayList<PersonDetails>();
+		for (int i = (PAGE_NUMBER-1)*PAGE_SIZE; i < (personDetailsList.size()>PAGE_NUMBER*PAGE_SIZE?PAGE_NUMBER*PAGE_SIZE:personDetailsList.size()); i++) {
+			paginatedPersonDetails.add(personDetailsList.get(i));
+		}
+		PersonDetailsTableModel tableModel  = new PersonDetailsTableModel();
+		tableModel.setPersonDetails(paginatedPersonDetails);
+		return tableModel;
+	}
+
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
