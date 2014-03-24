@@ -3,7 +3,10 @@
  */
 package com.mobile.health.demo.manager;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -18,7 +21,7 @@ import com.mobile.health.demo.listener.FlatFileExportActionListener;
 
 public class PortalMenuManager {
 
-    public static void addPortalMenuBarToFrame(JFrame frame) {
+    public static void addPortalMenuBarToFrame(final JFrame frame) {
         JMenuBar menuBar;
         JMenu menu, submenu;
         JMenuItem menuItem;
@@ -59,6 +62,13 @@ public class PortalMenuManager {
 
         //a group of JMenuItems
         menuItem = new JMenuItem("About Us");
+        menuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showMessageDialog(frame, "Public Health Portal Demo\nVersion:1.0.0\nAuthor:Shashank Agrawal");				
+			}
+		});
         menu.add(menuItem);
         menuBar.add(menu);
 
