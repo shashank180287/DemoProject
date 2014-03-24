@@ -123,6 +123,8 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         frame.add(table, BorderLayout.CENTER);
         frame.add(btnPnl, BorderLayout.SOUTH);
 
+        PortalMenuManager.addPortalMenuBarToFrame(frame);
+        
         frame.pack();
         frame.setVisible(true);
 	}
