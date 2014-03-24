@@ -61,4 +61,11 @@ public class PersonDetails {
 		this.panchayat = panchayat;
 	}
 
+    /**
+     * @return
+     */
+    public Object[] toObjectArray() {
+        return new Object[] { firstName, lastName, gender, age, address, panchayat };
+    }
+
 }
