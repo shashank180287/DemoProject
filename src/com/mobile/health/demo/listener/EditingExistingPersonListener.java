@@ -68,10 +68,13 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PersonDetails personDetails = new PersonDetails(firstNameText.getText(), lastNameText.getText(), genderText.getText(),
-						Integer.parseInt(ageText.getText()), addrText.getText(), panchayatText.getText());
-				int index = table.getSelectedRow();
-				DBManger.updatePersonDetails(index, personDetails);
+				existingPersonDetails.setFirstName(firstNameText.getText()); 
+				existingPersonDetails.setLastName(lastNameText.getText()); 
+				existingPersonDetails.setGender(genderText.getText());
+				existingPersonDetails.setAge(Integer.parseInt(ageText.getText())); 
+				existingPersonDetails.setAddress(addrText.getText());
+				existingPersonDetails.setPanchayat(panchayatText.getText());
+				DBManger.updatePersonDetails(existingPersonDetails);
 				frame.repaint();
 				dispose();
 			}
