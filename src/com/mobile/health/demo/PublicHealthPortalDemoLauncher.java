@@ -85,7 +85,7 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 		
 		personDetailsList = DBManger.getPersonDetails();
 		
-		PersonDetailsTableModel personDetailsTableModel = paginatePersonDetailsTableModel();
+		final PersonDetailsTableModel personDetailsTableModel = paginatePersonDetailsTableModel();
 		final PublicHealthPortalTable table = new PublicHealthPortalTable(personDetailsTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
@@ -165,7 +165,7 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = table.getSelectedRow();
-				DBManger.removePersonDetailAtIndex(index);
+				DBManger.removePersonDetailAtIndex(personDetailsTableModel.getPersonDetails().get(index));
 				frame.repaint();				
 			}
 		});
