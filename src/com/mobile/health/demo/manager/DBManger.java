@@ -1,5 +1,7 @@
 package com.mobile.health.demo.manager;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,42 +9,59 @@ import com.mobile.health.demo.entity.PersonDetails;
 
 public class DBManger {
 
-	private static List<PersonDetails> personDetails;
+	private static JdbcTemplate jdbcTemplate = JdbcTemplate.getMySQLJdbcTemplate();
+	private static int currentId = getCurrentIdCursor();
 	
-	public static List<PersonDetails> fetchAllPersonDetails() {
-		return null;
-		
+	private static int getCurrentIdCursor() {
+		String query = "SELECT MAX(id) FROM person_details";
+		try {
+			return jdbcTemplate.executeQuery(query).getInt(0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
-	
+
 	public static void addPersonDetails(PersonDetails personDetail) {
-		personDetails.add(personDetail);
+		String query = "INSERT INTO person_details VALUES ("+(currentId+1)+",'"+personDetail.getFirstName()+"','"+personDetail.getLastName()+"','"
+					+personDetail.getGender()+"',"+personDetail.getAge()+",'"+personDetail.getAddress()+"','"+personDetail.getPanchayat()+"')";
+		int updateStatus = jdbcTemplate.executeUpdate(query);
+		if(updateStatus==1)
+			currentId++;
 	}
 
-	public static int generateId() {
-		int id = personDetails.size()+1;
-		return id;
-	}
-
-	public static void updatePersonDetails(int index,
-			PersonDetails personDetail) {
-		personDetails.set(index, personDetail);
+	public static void updatePersonDetails(PersonDetails personDetail) {
+		if(personDetail.getId()==null)
+			throw new IllegalArgumentException("Id can not be null");
 		
+		String query = "UPDATE person_details SET first_name='"+ personDetail.getFirstName()+"',last_name='"+personDetail.getLastName()+"',gender='"
+				+personDetail.getGender()+"',age="+personDetail.getAge()+",address='"+personDetail.getAddress()+"',panchayat='"+personDetail.getPanchayat()
+				+"' WHERE id="+personDetail.getId();
+		jdbcTemplate.executeUpdate(query);
 	}
 
-	public static void removePersonDetailAtIndex(int index) {
-		personDetails.remove(index);		
+	public static void removePersonDetailAtIndex(PersonDetails personDetail) {
+		if(personDetail.getId()==null)
+			throw new IllegalArgumentException("Id can not be null");
+		
+		String query = "DELETE person_details WHERE id="+personDetail.getId();
+		jdbcTemplate.executeUpdate(query);	
 	}
 	
 	public static List<PersonDetails> getPersonDetails() {
-		personDetails = new ArrayList<PersonDetails>();
-		personDetails.add(new PersonDetails("Ram", "Das", "Male", 23, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Shyam", "Das", "Male", 37, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Shila", "Devi", "Female", 28, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Ramu", "Das", "Male", 13, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Ram", "Das", "Male", 23, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Shyam", "Das", "Male", 37, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Shila", "Devi", "Female", 28, "Lucknow", "Lucknow"));
-		personDetails.add(new PersonDetails("Ramu", "Das", "Male", 13, "Lucknow", "Lucknow"));
+		String query = "SELECT * FROM person_details ORDER BY id";
+		List<PersonDetails> personDetails = new ArrayList<PersonDetails>();
+		try{
+			ResultSet personDetailsData = jdbcTemplate.executeQuery(query);
+			while(personDetailsData.next()){
+				personDetails.add(new PersonDetails(personDetailsData.getInt("id"), personDetailsData.getString("first_name"),
+						personDetailsData.getString("last_name"), personDetailsData.getString("gender"),
+						personDetailsData.getInt("age"), personDetailsData.getString("address"),
+						personDetailsData.getString("panchayat")));
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return personDetails;
 	}
 }
