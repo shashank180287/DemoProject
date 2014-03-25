@@ -59,7 +59,7 @@ public class AddingNewPersonListener extends JFrame implements ActionListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PersonDetails personDetails = new PersonDetails(firstNameText.getText(), lastNameText.getText(), genderText.getText(),
+				PersonDetails personDetails = new PersonDetails(DBManger.getCurrentIdCursor()+1, firstNameText.getText(), lastNameText.getText(), genderText.getText(),
 						Integer.parseInt(ageText.getText()), addrText.getText(), panchayatText.getText());
 				DBManger.addPersonDetails(personDetails);
 				frame.repaint();
