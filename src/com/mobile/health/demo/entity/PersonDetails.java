@@ -1,10 +1,9 @@
 package com.mobile.health.demo.entity;
 
-import com.mobile.health.demo.manager.DBManger;
 
 public class PersonDetails {
 
-	public int id;
+	public Integer id;
 	public String firstName;
 	public String lastName;
 	public String gender;
@@ -12,10 +11,10 @@ public class PersonDetails {
 	public String address;
 	public String panchayat;
 	
-	public PersonDetails(String firstName, String lastName, String gender,
+	public PersonDetails(int id, String firstName, String lastName, String gender,
 			int age, String address, String panchayat) {
 		super();
-		this.id = DBManger.generateId();
+		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
@@ -61,7 +60,15 @@ public class PersonDetails {
 		this.panchayat = panchayat;
 	}
 
-    /**
+    public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
      * @return
      */
     public Object[] toObjectArray() {
