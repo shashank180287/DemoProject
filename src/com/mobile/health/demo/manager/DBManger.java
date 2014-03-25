@@ -10,9 +10,8 @@ import com.mobile.health.demo.entity.PersonDetails;
 public class DBManger {
 
 	private static JdbcTemplate jdbcTemplate = JdbcTemplate.getMySQLJdbcTemplate();
-	private static int currentId = getCurrentIdCursor();
 	
-	private static int getCurrentIdCursor() {
+	public static int getCurrentIdCursor() {
 		String query = "SELECT MAX(id) FROM person_details";
 		try {
 			return jdbcTemplate.executeQuery(query).getInt(0);
@@ -23,11 +22,9 @@ public class DBManger {
 	}
 
 	public static void addPersonDetails(PersonDetails personDetail) {
-		String query = "INSERT INTO person_details VALUES ("+(currentId+1)+",'"+personDetail.getFirstName()+"','"+personDetail.getLastName()+"','"
+		String query = "INSERT INTO person_details VALUES ("+personDetail.getId()+",'"+personDetail.getFirstName()+"','"+personDetail.getLastName()+"','"
 					+personDetail.getGender()+"',"+personDetail.getAge()+",'"+personDetail.getAddress()+"','"+personDetail.getPanchayat()+"')";
-		int updateStatus = jdbcTemplate.executeUpdate(query);
-		if(updateStatus==1)
-			currentId++;
+		jdbcTemplate.executeUpdate(query);
 	}
 
 	public static void updatePersonDetails(PersonDetails personDetail) {
