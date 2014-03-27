@@ -76,17 +76,19 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 	private static final int PAGE_SIZE=2;
 	private static int PAGE_NUMBER=1;
 	private List<PersonDetails> personDetailsList;
+	private PublicHealthPortalTable table;
+	final JFrame frame;
 	
 	public PublicHealthPortalDemoLauncher() {
 		super(new GridLayout(1, 0));
-		final JFrame frame = new JFrame("Public Health Portal Demo");
+		frame = new JFrame("Public Health Portal Demo");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		
 		personDetailsList = DBManger.getPersonDetails();
 		
 		final PersonDetailsTableModel personDetailsTableModel = paginatePersonDetailsTableModel();
-		final PublicHealthPortalTable table = new PublicHealthPortalTable(personDetailsTableModel);
+		table = new PublicHealthPortalTable(personDetailsTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -152,11 +154,11 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         topBtnPnl.add(nextButton);
 
         addNewButton = (new JButton("Add New"));
-        addNewButton.addActionListener(new AddingNewPersonListener(frame));
+        addNewButton.addActionListener(new AddingNewPersonListener(frame, this));
         bottombtnPnl.add(addNewButton);
         
         editExistingButton  = new JButton("Edit Selected");
-        editExistingButton.addActionListener(new EditingExistingPersonListener(frame, table));
+        editExistingButton.addActionListener(new EditingExistingPersonListener(frame, personDetailsTableModel, table, this));
         bottombtnPnl.add(editExistingButton);
         
         removeExistingButton = new JButton("Delete Selected");
@@ -165,7 +167,7 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = table.getSelectedRow();
-				DBManger.removePersonDetailAtIndex(personDetailsTableModel.getPersonDetails().get(index));
+				DBManger.removePersonDetails(personDetailsTableModel.getPersonDetails().get(index));
 				frame.repaint();				
 			}
 		});
@@ -217,5 +219,26 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 	 */
 	private static void createAndShowGUI() {
 		new PublicHealthPortalDemoLauncher();
+	}
+	
+	public void refreshTableInFrame(int... pageNumber) {
+		if(pageNumber!=null && pageNumber.length>0){
+			PAGE_NUMBER = pageNumber[0];
+		}
+		personDetailsList = DBManger.getPersonDetails();
+		final PersonDetailsTableModel personDetailsTableModel = paginatePersonDetailsTableModel();
+        if(PAGE_NUMBER==1){
+        	previousButton.setEnabled(false);
+        }else{
+        	previousButton.setEnabled(true);
+        }
+        if(personDetailsList.size()<=PAGE_NUMBER*PAGE_SIZE){
+        	nextButton.setEnabled(false);
+        }else{
+        	nextButton.setEnabled(true);
+        }
+        table.setModel(personDetailsTableModel);
+        table.repaint();
+		frame.repaint();
 	}
 }

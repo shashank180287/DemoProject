@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import com.mobile.health.demo.PublicHealthPortalDemoLauncher;
 import com.mobile.health.demo.entity.PersonDetails;
 import com.mobile.health.demo.manager.DBManger;
 
@@ -22,11 +25,13 @@ public class AddingNewPersonListener extends JFrame implements ActionListener {
 	JLabel headline, firstNameLabel, lastNameLabel, genderLabel, ageLabel, addressLabel, panchayatLabel;
 	JTextField firstNameText, lastNameText, genderText, ageText, addrText, panchayatText;
 	JButton createButton, clearButton;
-
+	WindowAdapter adapter;
 	JFrame frame;
+	PublicHealthPortalDemoLauncher launcher;
 	
-	public AddingNewPersonListener(JFrame frame) {
+	public AddingNewPersonListener(JFrame frame, PublicHealthPortalDemoLauncher launcher) {
 		this.frame = frame;
+		this.launcher = launcher;
 	}
 	
 	public void createAndShowGUI() {
@@ -62,7 +67,8 @@ public class AddingNewPersonListener extends JFrame implements ActionListener {
 				PersonDetails personDetails = new PersonDetails(DBManger.getCurrentIdCursor()+1, firstNameText.getText(), lastNameText.getText(), genderText.getText(),
 						Integer.parseInt(ageText.getText()), addrText.getText(), panchayatText.getText());
 				DBManger.addPersonDetails(personDetails);
-				frame.repaint();
+				frame.setEnabled(true);
+				launcher.refreshTableInFrame(1);
 				dispose();
 			}
 		});
@@ -111,10 +117,22 @@ public class AddingNewPersonListener extends JFrame implements ActionListener {
 		add(panchayatText);
 		add(createButton);
 		add(clearButton);
+		
+		adapter = new WindowAdapter() {
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				frame.setEnabled(true);
+				super.windowClosing(e);
+			}
+			
+		};
+		addWindowListener(adapter);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		this.frame.setEnabled(false);
 		createAndShowGUI();
 
 	}

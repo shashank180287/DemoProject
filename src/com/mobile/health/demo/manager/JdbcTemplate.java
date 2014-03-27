@@ -22,9 +22,9 @@ public class JdbcTemplate {
 
 	private void initializeConnection() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.postgresql.Driver");
 			connection = DriverManager.getConnection(
-					"jdbc:mysql://localhost/public_health_portal", "root", "root");
+					"jdbc:postgresql://localhost/publichealthportal", "postgres", "postgres");//5432
 		} catch (SQLException e) {
 			System.out.println("ERROR: failed to connect to the databse");
 			e.printStackTrace();
@@ -60,12 +60,6 @@ public class JdbcTemplate {
 		} catch (Exception e) {
 			System.out.println("ERROR executing query: ");
 			e.printStackTrace();
-		} finally {
-			try {
-				ps.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return null;
 	}

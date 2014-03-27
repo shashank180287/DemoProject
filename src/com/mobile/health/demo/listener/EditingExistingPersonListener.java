@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,7 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import com.mobile.health.demo.PublicHealthPortalDemoLauncher;
+import com.mobile.health.demo.PublicHealthPortalTable;
 import com.mobile.health.demo.entity.PersonDetails;
+import com.mobile.health.demo.entity.PersonDetailsTableModel;
 import com.mobile.health.demo.manager.DBManger;
 
 public class EditingExistingPersonListener extends JFrame implements ActionListener {
@@ -27,12 +32,19 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 	JFrame frame;
 	JTable table;
 	PersonDetails existingPersonDetails;
-	
-	public EditingExistingPersonListener(JFrame frame, JTable table) {
+	PersonDetailsTableModel personDetailsTableModel;
+	PublicHealthPortalDemoLauncher launcher;
+
+	public EditingExistingPersonListener(JFrame frame,
+			PersonDetailsTableModel personDetailsTableModel,
+			PublicHealthPortalTable table,
+			PublicHealthPortalDemoLauncher launcher) {
 		this.frame = frame;
 		this.table = table;
+		this.launcher=launcher;
+		this.personDetailsTableModel=personDetailsTableModel;
 	}
-	
+
 	public void createAndShowGUI() {
 		setVisible(true);
 		setSize(700, 500);
@@ -75,7 +87,8 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 				existingPersonDetails.setAddress(addrText.getText());
 				existingPersonDetails.setPanchayat(panchayatText.getText());
 				DBManger.updatePersonDetails(existingPersonDetails);
-				frame.repaint();
+				frame.setEnabled(true);
+				launcher.refreshTableInFrame();
 				dispose();
 			}
 		});
@@ -124,11 +137,23 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 		add(panchayatText);
 		add(updateButton);
 		add(clearButton);
+		
+		WindowAdapter adapter = new WindowAdapter() {
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				frame.setEnabled(true);
+				super.windowClosing(e);
+			}
+			
+		};
+		addWindowListener(adapter);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		this.existingPersonDetails =  DBManger.getPersonDetails().get(table.getSelectedRow());
+		this.frame.setEnabled(false);
+		this.existingPersonDetails = personDetailsTableModel.getPersonDetails().get(table.getSelectedRow());
 		createAndShowGUI();
 	}
 }

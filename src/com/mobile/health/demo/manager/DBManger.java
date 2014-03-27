@@ -13,10 +13,20 @@ public class DBManger {
 	
 	public static int getCurrentIdCursor() {
 		String query = "SELECT MAX(id) FROM person_details";
+		ResultSet maxId=null;
 		try {
-			return jdbcTemplate.executeQuery(query).getInt(0);
+			maxId = jdbcTemplate.executeQuery(query);
+			while(maxId.next())
+					return maxId.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}  finally{
+			if(maxId!=null)
+				try {
+					maxId.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return 0;
 	}
@@ -37,7 +47,7 @@ public class DBManger {
 		jdbcTemplate.executeUpdate(query);
 	}
 
-	public static void removePersonDetailAtIndex(PersonDetails personDetail) {
+	public static void removePersonDetails(PersonDetails personDetail) {
 		if(personDetail.getId()==null)
 			throw new IllegalArgumentException("Id can not be null");
 		
@@ -46,10 +56,11 @@ public class DBManger {
 	}
 	
 	public static List<PersonDetails> getPersonDetails() {
-		String query = "SELECT * FROM person_details ORDER BY id";
+		String query = "SELECT * FROM person_details ORDER BY id desc";
 		List<PersonDetails> personDetails = new ArrayList<PersonDetails>();
+		ResultSet personDetailsData = null;
 		try{
-			ResultSet personDetailsData = jdbcTemplate.executeQuery(query);
+			personDetailsData = jdbcTemplate.executeQuery(query);
 			while(personDetailsData.next()){
 				personDetails.add(new PersonDetails(personDetailsData.getInt("id"), personDetailsData.getString("first_name"),
 						personDetailsData.getString("last_name"), personDetailsData.getString("gender"),
@@ -58,6 +69,13 @@ public class DBManger {
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
+		} finally{
+			if(personDetailsData!=null)
+				try {
+					personDetailsData.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return personDetails;
 	}
