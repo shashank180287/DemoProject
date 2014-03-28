@@ -1,6 +1,7 @@
 package com.mobile.health.demo.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,6 +49,9 @@ public class BakDBManger {
 	}
 	
 	public static List<PersonDetails> getPersonDetails() {
-		return personDetails;
+		List<PersonDetails> tempPersonDetails = new ArrayList<PersonDetails>();
+		Collections.copy(tempPersonDetails, personDetails);
+		Collections.reverse(tempPersonDetails);
+		return tempPersonDetails;
 	}
 }
