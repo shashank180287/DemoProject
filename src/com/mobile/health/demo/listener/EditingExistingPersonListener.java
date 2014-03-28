@@ -117,6 +117,15 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 		lastNameText.setBounds(300, 110, 200, 30);
 		genderText.setBounds(300, 150, 200, 30);
 		ageText.setBounds(300, 190, 200, 30);
+		ageText.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!((c >= '0') && (c <= '9') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+					getToolkit().beep();
+					e.consume();
+				}
+			}
+		});
 		addrText.setBounds(300, 230, 200, 30);
 		panchayatText.setBounds(300, 270, 200, 30);
 		updateButton.setBounds(50, 350, 100, 30);
