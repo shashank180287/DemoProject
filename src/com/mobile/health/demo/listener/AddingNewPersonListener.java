@@ -54,6 +54,15 @@ public class AddingNewPersonListener extends JFrame implements ActionListener {
 		lastNameText = new JTextField();
 		genderText = new JTextField();
 		ageText = new JTextField();
+		ageText.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+				if (!((c >= '0') && (c <= '9') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+					getToolkit().beep();
+					e.consume();
+				}
+			}
+		});
 		addrText = new JTextField();
 		panchayatText = new JTextField();
 
