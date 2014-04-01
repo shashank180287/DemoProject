@@ -188,7 +188,7 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         frame.setVisible(true);
 	}
 	
-	private PersonDetailsTableModel paginatePersonDetailsTableModel() {
+	public PersonDetailsTableModel paginatePersonDetailsTableModel() {
 		List<PersonDetails> paginatedPersonDetails = new ArrayList<PersonDetails>();
 		for (int i = (PAGE_NUMBER-1)*PAGE_SIZE; i < (personDetailsList.size()>PAGE_NUMBER*PAGE_SIZE?PAGE_NUMBER*PAGE_SIZE:personDetailsList.size()); i++) {
 			paginatedPersonDetails.add(personDetailsList.get(i));
