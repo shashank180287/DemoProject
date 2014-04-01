@@ -162,7 +162,8 @@ public class EditingExistingPersonListener extends JFrame implements ActionListe
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		this.frame.setEnabled(false);
-		this.existingPersonDetails = personDetailsTableModel.getPersonDetails().get(table.getSelectedRow());
+		this.existingPersonDetails = launcher.paginatePersonDetailsTableModel().getPersonDetails()
+                .get(table.getSelectedRow());
 		createAndShowGUI();
 	}
 }
