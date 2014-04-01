@@ -77,6 +77,8 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 	private static int PAGE_NUMBER=1;
 	private List<PersonDetails> personDetailsList;
 	private PublicHealthPortalTable table;
+    private JPanel topBtnPnl;
+    private JLabel label;
 	final JFrame frame;
 	
 	public PublicHealthPortalDemoLauncher() {
@@ -95,10 +97,16 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 		add(scrollPane);
 		
 		JPanel btnPnl = new JPanel(new BorderLayout());
-        JPanel topBtnPnl = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+        topBtnPnl = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         JPanel bottombtnPnl = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-        topBtnPnl.add((personDetailsTableModel.getRowCount()==0?new JLabel("No Data Found..."):new JLabel()));
+        label = new JLabel();
+        
+        if(personDetailsTableModel.getRowCount()==0){
+            label.setText("No Data Found...");
+        }else{
+            label.setText("");
+        }
+        topBtnPnl.add(label);
         previousButton = new JButton("Previous");
         if(PAGE_NUMBER==1){
         	previousButton.setEnabled(false);
@@ -167,8 +175,8 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = table.getSelectedRow();
-				DBManger.removePersonDetails(paginatePersonDetailsTableModel().getPersonDetails().get(index));
-                		freshTableInFrame(1);
+                DBManger.removePersonDetails(paginatePersonDetailsTableModel().getPersonDetails().get(index));
+                refreshTableInFrame(1);
 				frame.repaint();				
 			}
 		});
@@ -189,7 +197,7 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         frame.setVisible(true);
 	}
 	
-	public PersonDetailsTableModel paginatePersonDetailsTableModel() {
+    public PersonDetailsTableModel paginatePersonDetailsTableModel() {
 		List<PersonDetails> paginatedPersonDetails = new ArrayList<PersonDetails>();
 		for (int i = (PAGE_NUMBER-1)*PAGE_SIZE; i < (personDetailsList.size()>PAGE_NUMBER*PAGE_SIZE?PAGE_NUMBER*PAGE_SIZE:personDetailsList.size()); i++) {
 			paginatedPersonDetails.add(personDetailsList.get(i));
@@ -203,7 +211,8 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
+				@Override
+                public void run() {
 					createAndShowGUI();
 				}
 			});
@@ -238,6 +247,13 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
         }else{
         	nextButton.setEnabled(true);
         }
+        if (personDetailsList.size() == 0) {
+            label.setText("No Data Found...");
+        }
+        else {
+            label.setText("");
+        }
+        label.repaint();
         table.setModel(personDetailsTableModel);
         table.repaint();
 		frame.repaint();
