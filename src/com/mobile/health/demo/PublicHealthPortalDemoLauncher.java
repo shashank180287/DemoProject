@@ -167,7 +167,8 @@ public class PublicHealthPortalDemoLauncher extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = table.getSelectedRow();
-				DBManger.removePersonDetails(personDetailsTableModel.getPersonDetails().get(index));
+				DBManger.removePersonDetails(paginatePersonDetailsTableModel().getPersonDetails().get(index));
+                		freshTableInFrame(1);
 				frame.repaint();				
 			}
 		});
