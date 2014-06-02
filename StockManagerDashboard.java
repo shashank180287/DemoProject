@@ -280,7 +280,7 @@ public class StockManagerDashboard extends JFrame {
 
 	private void addTabs(JTabbedPane tabbedPane) {
 		tabbedPane.addTab("Stock Management", new StockManagementTab().build());
-		tabbedPane.addTab("Dashboard", new DesktopTab().build());
+		tabbedPane.addTab("Dashboard", new StockDashboardTab().build());
 	}
 
 	protected String getWindowTitle() {
