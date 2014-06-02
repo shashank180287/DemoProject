@@ -279,7 +279,7 @@ public class StockManagerDashboard extends JFrame {
 	}
 
 	private void addTabs(JTabbedPane tabbedPane) {
-		tabbedPane.addTab("Split", new SplitTab().build());
+		tabbedPane.addTab("Split", new StockSplitTab().build());
 		tabbedPane.addTab("Desktop", new DesktopTab().build());
 	}
 
