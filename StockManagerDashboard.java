@@ -35,11 +35,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 
-import javax.swing.AbstractButton;
-import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -47,8 +44,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -91,12 +86,14 @@ public class StockManagerDashboard extends JFrame {
 	/** Describes optional settings of the JGoodies Looks. */
 	private final Settings settings;
 
+	private UserRoleHandler userRoleHandler;
 	/**
 	 * Constructs a <code>DemoFrame</code>, configures the UI, and builds the
 	 * content.
 	 */
-	protected StockManagerDashboard(Settings settings) {
+	protected StockManagerDashboard(Settings settings, UserRoleDefine userRoleDefine) {
 		this.settings = settings;
+		this.userRoleHandler = userRoleDefine.getRoleHandler();
 		configureUI();
 		build();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -104,14 +101,14 @@ public class StockManagerDashboard extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		StockManagerDashboard instance = new StockManagerDashboard(createSettings());
+		StockManagerDashboard instance = new StockManagerDashboard(createSettings(), UserRoleDefine.ADMIN);
 		instance.setSize(PREFERRED_SIZE);
 		instance.locateOnScreen(instance);
 		instance.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		instance.setVisible(true);
 	}
 
-	private static Settings createSettings() {
+	public static Settings createSettings() {
 		Settings settings = Settings.createDefault();
 		// Configure the settings here.
 		return settings;
@@ -186,7 +183,7 @@ public class StockManagerDashboard extends JFrame {
 	 * @return the builder that builds the menu bar
 	 */
 	protected StockMenuBuilder createMenuBuilder() {
-		return new StockMenuBuilder();
+		return userRoleHandler.getStockMenuBuilder();
 	}
 
 	/**
@@ -194,78 +191,10 @@ public class StockManagerDashboard extends JFrame {
 	 */
 	private JComponent buildContentPane() {
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(buildToolBar(), BorderLayout.NORTH);
+		panel.add(userRoleHandler.buildToolBar(settings), BorderLayout.NORTH);
 		panel.add(buildMainPanel(), BorderLayout.CENTER);
 		return panel;
 	}
-
-	// Tool Bar *************************************************************
-
-	/**
-	 * Builds, configures and returns the toolbar. Requests HeaderStyle,
-	 * look-specific BorderStyles, and Plastic 3D Hint from Launcher.
-	 */
-	private Component buildToolBar() {
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
-		// Swing
-		toolBar.putClientProperty(Options.HEADER_STYLE_KEY,
-				settings.getToolBarHeaderStyle());
-		toolBar.putClientProperty(PlasticLookAndFeel.BORDER_STYLE_KEY,
-				settings.getToolBarPlasticBorderStyle());
-		toolBar.putClientProperty(PlasticLookAndFeel.BORDER_STYLE_KEY,
-				settings.getToolBarWindowsBorderStyle());
-		toolBar.putClientProperty(PlasticLookAndFeel.IS_3D_KEY,
-				settings.getToolBar3DHint());
-
-		AbstractButton button;
-		toolBar.add(createToolBarButton("home.gif"));
-		toolBar.addSeparator();
-		toolBar.add(createToolBarButton("print.gif"));
-		toolBar.add(createToolBarButton("refresh.gif"));
-		toolBar.addSeparator();
-
-		button = createToolBarButton("help.gif");
-		button.addActionListener(createHelpActionListener());
-		toolBar.add(button);
-
-		toolBar.add(Box.createGlue());
-		return toolBar;
-	}
-
-	/**
-	 * Creates and returns a <code>JButton</code> configured for use in a
-	 * JToolBar.
-	 * <p>
-	 * 
-	 * This is a simplified method that is overriden by the Looks Demo. The full
-	 * code uses the JGoodies UI framework's ToolBarButton that better handles
-	 * platform differences.
-	 */
-	protected AbstractButton createToolBarButton(String iconName) {
-		JButton button = new JButton(readImageIcon(iconName));
-		button.setToolTipText(iconName);
-		button.setFocusable(false);
-		return button;
-	}
-
-	/**
-	 * Creates and returns a <code>JToggleButton</code> configured for use in a
-	 * JToolBar.
-	 * <p>
-	 * 
-	 * This is a simplified method that is overriden by the Looks Demo. The full
-	 * code uses the JGoodies UI framework's ToolBarButton that better handles
-	 * platform differences.
-	 */
-	protected AbstractButton createToolBarRadioButton(String iconName) {
-		JToggleButton button = new JToggleButton(readImageIcon(iconName));
-		button.setFocusable(false);
-		return button;
-	}
-
-	// Tabbed Pane **********************************************************
 
 	/**
 	 * Builds and answers the tabbed pane.
@@ -273,15 +202,12 @@ public class StockManagerDashboard extends JFrame {
 	private Component buildMainPanel() {
 		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		// tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		addTabs(tabbedPane);
+		userRoleHandler.addTabs(tabbedPane);
 		tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		return tabbedPane;
 	}
 
-	private void addTabs(JTabbedPane tabbedPane) {
-		tabbedPane.addTab("Stock Management", new StockManagementTab().build());
-		tabbedPane.addTab("Dashboard", new StockDashboardTab().build());
-	}
+
 
 	protected String getWindowTitle() {
 		return "Stock Management System";
@@ -310,13 +236,6 @@ public class StockManagerDashboard extends JFrame {
 	}
 
 	/**
-	 * Creates and answers an ActionListener that opens the help viewer.
-	 */
-	protected ActionListener createHelpActionListener() {
-		return null;
-	}
-
-	/**
 	 * Creates and answers an ActionListener that opens the about dialog.
 	 */
 	protected ActionListener createAboutActionListener() {
@@ -329,4 +248,10 @@ public class StockManagerDashboard extends JFrame {
 		};
 	}
 
+	/**
+	 * Creates and answers an ActionListener that opens the help viewer.
+	 */
+	protected ActionListener createHelpActionListener() {
+		return null;
+	}
 }
