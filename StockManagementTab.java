@@ -54,9 +54,15 @@ import com.jgoodies.uif_lite.component.UIFSplitPane;
 final class StockManagementTab {
     
 
+	private UserRoleDefine userRoleDefine;
     /**
      * Builds and returns the panel.
      */
+	
+	public StockManagementTab(UserRoleDefine userRoleDefine) {
+		this.userRoleDefine = userRoleDefine;
+	}
+	
     JComponent build() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(Borders.DIALOG_BORDER);
@@ -146,24 +152,48 @@ final class StockManagementTab {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Stock Management");
         DefaultMutableTreeNode parent;
 
+        switch (userRoleDefine) {
+		case ADMIN:
+			{
+		        parent = new DefaultMutableTreeNode("Employee Options");
+		        root.add(parent);
+		        parent.add(new DefaultMutableTreeNode("Edit Details"));
+		        parent.add(new DefaultMutableTreeNode("Book Deal"));
+	
+		        //
+		        parent = new DefaultMutableTreeNode("Admin Options");
+		        root.add(parent);
+		        parent.add(new DefaultMutableTreeNode("Add Employee"));
+		        parent.add(new DefaultMutableTreeNode("Check Details"));
+		        parent.add(new DefaultMutableTreeNode("Transection History"));
+	
+		        parent = new DefaultMutableTreeNode("Customer Options");
+		        root.add(parent);
+		        parent.add(new DefaultMutableTreeNode("Book Deal"));
+		        parent.add(new DefaultMutableTreeNode("Check Deal History"));
+		        parent.add(new DefaultMutableTreeNode("Credit/Debit History"));
+	        }
+			break;
+		case CUSTOMER:
+			{
+		        parent = new DefaultMutableTreeNode("Customer Options");
+		        root.add(parent);
+		        parent.add(new DefaultMutableTreeNode("Book Deal"));
+		        parent.add(new DefaultMutableTreeNode("Check Deal History"));
+		        parent.add(new DefaultMutableTreeNode("Credit/Debit History"));
+			}
+			break;
+		case EMPLOYEE:
+			{
+		        parent = new DefaultMutableTreeNode("Employee Options");
+		        root.add(parent);
+		        parent.add(new DefaultMutableTreeNode("Edit Details"));
+		        parent.add(new DefaultMutableTreeNode("Book Deal"));
+			}
+			break;
+		}
         //
-        parent = new DefaultMutableTreeNode("Employee Options");
-        root.add(parent);
-        parent.add(new DefaultMutableTreeNode("Edit Details"));
-        parent.add(new DefaultMutableTreeNode("Book Deal"));
 
-        //
-        parent = new DefaultMutableTreeNode("Admin Options");
-        root.add(parent);
-        parent.add(new DefaultMutableTreeNode("Add Employee"));
-        parent.add(new DefaultMutableTreeNode("Check Details"));
-        parent.add(new DefaultMutableTreeNode("Transection History"));
-
-        parent = new DefaultMutableTreeNode("Customer Options");
-        root.add(parent);
-        parent.add(new DefaultMutableTreeNode("Book Deal"));
-        parent.add(new DefaultMutableTreeNode("Check Deal History"));
-        parent.add(new DefaultMutableTreeNode("Credit/Debit History"));
 
         return new DefaultTreeModel(root);
     }
