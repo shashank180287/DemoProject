@@ -158,6 +158,8 @@ public class InvoiceDesign {
 		InvoiceDesign design = new InvoiceDesign();
 		try {
 			JasperReportBuilder report = design.build();
+			OutputStream stream = new FileOutputStream(new File("C:\\MyDocument\\samples\\demo.pdf"));
+			report.toPdf(stream);
 			report.show();
 		} catch (DRException e) {
 			e.printStackTrace();
